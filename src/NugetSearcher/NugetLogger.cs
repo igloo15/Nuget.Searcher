@@ -29,7 +29,7 @@ namespace Igloo15.NuGetSearcher
         /// <param name="data"></param>
         public void LogDebug(string data)
         {
-            _logger.LogDebug(data);
+            _logger?.LogDebug(data);
         }
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace Igloo15.NuGetSearcher
         /// <param name="data"></param>
         public void LogVerbose(string data)
         {
-            _logger.LogDebug(data);
+            _logger?.LogDebug(data);
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace Igloo15.NuGetSearcher
         /// <param name="data"></param>
         public void LogInformation(string data)
         {
-            _logger.LogInformation(data);
+            _logger?.LogInformation(data);
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace Igloo15.NuGetSearcher
         /// <param name="data"></param>
         public void LogMinimal(string data)
         {
-            _logger.LogTrace(data);
+            _logger?.LogTrace(data);
         }
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace Igloo15.NuGetSearcher
         /// <param name="data"></param>
         public void LogWarning(string data)
         {
-            _logger.LogWarning(data);
+            _logger?.LogWarning(data);
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace Igloo15.NuGetSearcher
         /// <param name="data"></param>
         public void LogError(string data)
         {
-            _logger.LogError(data);
+            _logger?.LogError(data);
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace Igloo15.NuGetSearcher
         /// <param name="data"></param>
         public void LogInformationSummary(string data)
         {
-            _logger.LogInformation(data);
+            _logger?.LogInformation(data);
         }
 
         /// <summary>

@@ -100,7 +100,7 @@ Task("Push")
     
 
 Task("Default")
-    .IsDependentOn("Build");
+    .IsDependentOn("Publish");
 
 Task("Deploy")
 	.IsDependentOn("Push");
