@@ -49,23 +49,31 @@ Task("Update-Version")
 
 Task("Restore")
     .Does(() => {
-        DotNetCoreRestore("./src/Nuget.Searcher.sln");
+        DotNetCoreRestore("./src/NugetSearcher.sln");
     });
 
 Task("Build")
     .IsDependentOn("Restore")
     .IsDependentOn("Update-Version")
 	.Does(() => {
-        DotNetCoreBuild("./src/Nuget.Searcher.sln", new DotNetCoreBuildSettings {
+        DotNetCoreBuild("./src/NugetSearcher.sln", new DotNetCoreBuildSettings {
             Configuration = "Release",
             MSBuildSettings = MSBuildSettings
         });
     });
 
-Task("Pack")
+Task("Publish")
     .IsDependentOn("Build")
     .Does(() => {
-        DotNetCorePack("./src/Nuget.Searcher.sln", new DotNetCorePackSettings {
+        DotNetCorePublish("./src/NugetSearcher.sln", new DotNetCorePublishSettings {
+            Configuration = "Release"
+        });
+    });
+
+Task("Pack")
+    .IsDependentOn("Publish")
+    .Does(() => {
+        DotNetCorePack("./src/NugetSearcher.sln", new DotNetCorePackSettings {
             NoBuild = true,
             Configuration = "Release",
             OutputDirectory = "./packages.local",
@@ -73,7 +81,7 @@ Task("Pack")
         });
     });
 
-Task("Publish")
+Task("Push")
     .IsDependentOn("Pack")
     .Does(() => {
         foreach(var nupkgFile in GetFiles("./packages.local/*.nupkg"))
@@ -82,7 +90,7 @@ Task("Publish")
             NuGetPush(nupkgFile, new NuGetPushSettings {
                 Source = "https://api.nuget.org/v3/index.json"
             });
-            Information($"Succesfully Pushed Package {nupkgFile}");
+            Information($"Successfully Pushed Package {nupkgFile}");
         }
     })
     .OnError((e) => {
@@ -95,6 +103,6 @@ Task("Default")
     .IsDependentOn("Build");
 
 Task("Deploy")
-	.IsDependentOn("Publish");
+	.IsDependentOn("Push");
 
 RunTarget(target);

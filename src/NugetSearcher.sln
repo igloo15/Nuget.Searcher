@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nuget.Searcher", "Nuget.Searcher\Nuget.Searcher.csproj", "{2504275C-504F-4C31-BACE-763E6AC2E922}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NuGetSearcher", "NugetSearcher\NuGetSearcher.csproj", "{2504275C-504F-4C31-BACE-763E6AC2E922}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
