@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NuGet.Packaging;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -18,7 +19,7 @@ namespace Igloo15.NuGetSearcher
         /// Convert your tags into a NuGet Search Query. NuGet only Supports OR searching not AND
         /// </summary>
         /// <param name="TagNames">The tags you are searching on</param>
-        /// <returns></returns>
+        /// <returns>A query string for the tags</returns>
         public static string GetTagQuery(params string[] TagNames)
         {
             StringBuilder sb = new StringBuilder();

@@ -11,12 +11,14 @@ namespace NuGetSearcher.Client
             Console.WriteLine("Starting Test");
 
 
-            var results = NuGetSearcherUtility.NuGetStandardFeedV2.Search("test").Where(p => p.Tags.Split(' ').Contains("Microsoft"));
+            var results = NuGetSearcherUtility.NuGetStandardFeedV2.Search("test").Where(p => p.GetTags().Contains("Microsoft"));
 
 
             foreach(var result in results)
             {
                 Console.WriteLine($"Package : {result.Identity.Id}, Total Downloads : {result.DownloadCount}");
+
+                
             }
 
 

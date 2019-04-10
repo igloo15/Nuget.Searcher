@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NuGetSearcher", "NugetSearcher\NuGetSearcher.csproj", "{2504275C-504F-4C31-BACE-763E6AC2E922}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NuGetSearcher", "NuGetSearcher\NuGetSearcher.csproj", "{2504275C-504F-4C31-BACE-763E6AC2E922}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NuGetSearcher.Client", "NuGetSearcher.Client\NuGetSearcher.Client.csproj", "{9F704629-B137-4B4A-9A39-1631283A6E5B}"
 EndProject

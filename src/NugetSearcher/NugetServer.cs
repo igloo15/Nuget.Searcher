@@ -1,11 +1,11 @@
-﻿using NuGet.Common;
+﻿using Microsoft.Extensions.Logging;
+using NC = NuGet.Common;
 using NuGet.Protocol;
 using NuGet.Protocol.Core.Types;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace Igloo15.NuGetSearcher
 {
@@ -37,20 +37,22 @@ namespace Igloo15.NuGetSearcher
         /// <summary>
         /// The NuGet Logger for this server
         /// </summary>
-        public ILogger Logger { get; set; } = new NuGetLogger(null);
+        public NC.ILogger Logger { get; set; }
 
-        private SourceRepository _source;
+        internal SourceRepository Source { get; set; }
 
         /// <summary>
         /// The base constructor for a feed
         /// </summary>
         /// <param name="feedLocation">The feed location</param>
         /// <param name="feedType">The type of feed</param>
-        public NuGetServer(string feedLocation, FeedType feedType)
+        /// <param name="factory">Add a loggerfactory for logging stuff</param>
+        public NuGetServer(string feedLocation, FeedType feedType, ILoggerFactory factory = null)
         {
             FeedLocation = feedLocation;
 
-            _source = Repository.Factory.GetCoreV3(feedLocation, feedType);
+            Source = Repository.Factory.GetCoreV3(feedLocation, feedType);
+            Logger = new NuGetLogger(factory?.CreateLogger<NuGetLogger>());
         }
 
         /// <summary>
@@ -62,7 +64,7 @@ namespace Igloo15.NuGetSearcher
         /// <param name="skip">Optional amount of results to skip</param>
         /// <param name="take">Optional amount of results to take</param>
         /// <returns>The task with your results</returns>
-        public async Task<IEnumerable<IPackageSearchMetadata>> SearchAsync(string searchTerm, bool includePrerelease = false, CancellationToken cancelToken = default(CancellationToken), int skip = 0, int take = 100)
+        public async Task<IEnumerable<IPackageSourceMetadata>> SearchAsync(string searchTerm, bool includePrerelease = false, CancellationToken cancelToken = default(CancellationToken), int skip = 0, int take = 100)
         {
             if (IncludePrelease.HasValue)
                 includePrerelease = IncludePrelease.Value;
@@ -73,7 +75,9 @@ namespace Igloo15.NuGetSearcher
             if (TakeAmount.HasValue)
                 take = TakeAmount.Value;
             
-            return await _source.GetResource<PackageSearchResource>().SearchAsync(searchTerm, new SearchFilter(includePrerelease), skip, take, Logger, cancelToken);
+            var results = await Source.GetResource<PackageSearchResource>().SearchAsync(searchTerm, new SearchFilter(includePrerelease), skip, take, Logger, cancelToken);
+
+            return results.Select(p => p.ConvertToProxy(this));
         }
 
         /// <summary>
@@ -85,9 +89,9 @@ namespace Igloo15.NuGetSearcher
         /// <param name="skip">Optional amount of results to skip</param>
         /// <param name="take">Optional amount of results to take</param>
         /// <returns>The results of search</returns>
-        public IEnumerable<IPackageSearchMetadata> Search(string searchTerm, bool includePrerelease = false, CancellationToken cancelToken = default(CancellationToken), int skip = 0, int take = 100)
+        public IEnumerable<IPackageSourceMetadata> Search(string searchTerm, bool includePrerelease = false, CancellationToken cancelToken = default(CancellationToken), int skip = 0, int take = 100)
         {
-            return SearchAsync(searchTerm, includePrerelease, cancelToken).Result;
+            return SearchAsync(searchTerm, includePrerelease, cancelToken, skip, take).Result;
         }
 
     }
