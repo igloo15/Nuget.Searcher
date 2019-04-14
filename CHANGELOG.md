@@ -1,7 +1,7 @@
 # Changelog
-## Unreleased
+## v1.0.0
 ### Summary
-
+first official release of NuGet.Searcher Api hopefully allows more people to easily use nuget package api.. 
 
 ### Add
 *  NuGetServer now has TempDowloadLocation to determine where downloads should first be downloaded to before copied
@@ -17,6 +17,17 @@
 
 
 ### Changes
+*  update api documentation
+*  move sync methods to extensions
+*  update changelog configuration file
+*  update to build scripts version 2.0.2
+*  made async methods ConfigureAwait
+*  cleaned up sync methods to use appropiate way of asyncing results
+*  NuGetServer must be constructed by Utility class now
+*  DownloadStream removed as not need anymore
+*  update to latest build scripts
+*  update documentation
+*  update appveyor configuration
 *  Renamed to NuGetSearcher to avoid namespace clash
 *  Update Cake Scripts
 
