@@ -164,5 +164,34 @@ namespace igloo15.NuGetSearcher
         {
             return await server.SearchAsync($"id:{id}").ConfigureAwait(false);
         }
+
+        /// <summary>
+        /// The search term used to search the server synchronously
+        /// </summary>
+        /// <param name="server">The Extend Server</param>
+        /// <param name="searchTerm">The search term</param>
+        /// <param name="includePrerelease">Optional prerelease flag</param>
+        /// <param name="cancelToken">Optional cancellation token</param>
+        /// <param name="skip">Optional amount of results to skip</param>
+        /// <param name="take">Optional amount of results to take</param>
+        /// <returns>The results of search</returns>
+        public static IEnumerable<IPackageSourceMetadata> Search(this NuGetServer server, string searchTerm, bool includePrerelease = false, CancellationToken cancelToken = default(CancellationToken), int skip = 0, int take = 100)
+        {
+            return Extensions.RunSync(() => server.SearchAsync(searchTerm, includePrerelease, cancelToken, skip, take));
+        }
+
+        /// <summary>
+        /// The search term used to search the server synchronously
+        /// </summary>
+        /// <param name="server">The Extend Server</param>
+        /// <param name="includePrerelease">Optional prerelease flag</param>
+        /// <param name="cancelToken">Optional cancellation token</param>
+        /// <param name="skip">Optional amount of results to skip</param>
+        /// <param name="take">Optional amount of results to take</param>
+        /// <returns>The results of search</returns>
+        public static IEnumerable<IPackageSourceMetadata> GetAllPackages(this NuGetServer server, bool includePrerelease = false, CancellationToken cancelToken = default(CancellationToken), int skip = 0, int take = 100)
+        {
+            return Extensions.RunSync(() => server.GetAllPackagesAsync(includePrerelease, cancelToken, skip, take));
+        }
     }
 }

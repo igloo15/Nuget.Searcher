@@ -127,17 +127,16 @@ namespace igloo15.NuGetSearcher
         }
 
         /// <summary>
-        /// The search term used to search the server synchronously
+        /// Get all packages in a specific feed. Be care with setting you take too high
         /// </summary>
-        /// <param name="searchTerm">The search term</param>
-        /// <param name="includePrerelease">Optional prerelease flag</param>
-        /// <param name="cancelToken">Optional cancellation token</param>
-        /// <param name="skip">Optional amount of results to skip</param>
-        /// <param name="take">Optional amount of results to take</param>
-        /// <returns>The results of search</returns>
-        public IEnumerable<IPackageSourceMetadata> Search(string searchTerm, bool includePrerelease = false, CancellationToken cancelToken = default(CancellationToken), int skip = 0, int take = 100)
+        /// <param name="includePrerelease">Include prerelease packages</param>
+        /// <param name="cancelToken">A Cancellation token</param>
+        /// <param name="skip">The amount of packages to skip</param>
+        /// <param name="take">The amount of packages to take</param>
+        /// <returns>The task containing all the IPackageSearchMetadata</returns>
+        public async Task<IEnumerable<IPackageSourceMetadata>> GetAllPackagesAsync(bool includePrerelease = false, CancellationToken cancelToken = default(CancellationToken), int skip = 0, int take = 100)
         {
-            return Extensions.RunSync(() => SearchAsync(searchTerm, includePrerelease, cancelToken, skip, take));
+            return await SearchAsync("", includePrerelease, cancelToken, skip, take).ConfigureAwait(false);
         }
     }
 }
