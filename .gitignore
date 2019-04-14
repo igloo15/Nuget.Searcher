@@ -7,7 +7,7 @@
 [Dd]ist/
 Win32/
 LocalFeed/
-tools/
+tools/*
 !tools/packages.config
 packages.local/
 docs/codecoverage/coverage.json
@@ -17,13 +17,6 @@ docs/codecoverage/result.trx
 docs/codecoverage/result.xml
 docs/Tests/
 obj/
-
-# =========================
-# PM Engine Specific
-# =========================
-
-[Dd]eploy/
-Win32/
 
 ### VisualStudio ###
 ## Ignore Visual Studio temporary files, build results, and

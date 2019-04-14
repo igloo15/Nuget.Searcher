@@ -1,0 +1,80 @@
+{
+  "Categories": [
+    {
+      "Filter": {
+        "Keys": [
+          "#Add"
+        ],
+        "RemoveTokens": [],
+        "RemoveAllKey": true,
+        "MatchCase": false
+      },
+      "DisplayName": "Add"
+    },
+    {
+      "Filter": {
+        "Keys": [
+          "#Changes", "#Change"
+        ]
+      },
+      "DisplayName": "Changes"
+    },
+    {
+      "Filter": {
+        "Keys": [
+          "#Fix", "#Fixes", "#Fixed"
+        ]
+      },
+      "DisplayName": "Fixes"
+    },
+    {
+      "Filter": {
+        "Keys": [
+          "#Summary"
+        ]
+      },
+      "IsSummary": true,
+      "DisplayName": "Summary"
+    }
+  ],
+  "Links": [
+    {
+      "Filter": {
+        "Keys": [
+          "#issue-"
+        ],
+        "RemoveTokens": [
+          "#issue-"
+        ],
+        "RemoveAllKey": false,
+        "MatchCase": false
+      },
+      "UrlTemplate": "https://github.com/igloo15/Nuget.Searcher/issues/{LinkCleanKey}"
+    }
+  ],
+  "VersionFilter": {
+    "Keys": [
+      "v"
+    ]
+  },
+  "Templates": {
+    "TitleTemplate": "# Changelog",
+    "VersionTemplate": "## {Version}",
+    "SummarySentenceTemplate": "{Message}. ",
+    "CategoryTemplate": "### {Category}",
+    "IssueTemplate": "* {Message} {Links}",
+    "LinkTemplate": "[{LinkCleanKey}]({Url})",
+    "NoIssuesTemplate": "*  N/A ",
+    "EndVersionTemplate": "\n",
+    "EndCategoryTemplate": "\n",
+    "EndChangelogTemplate": ""
+  },
+  "ChangelogLocation": "./CHANGELOG.md",
+  "GitRepoLocation": ".",
+  "UnreleasedTitle": "Unreleased",
+  "GitRepoCommitLimit": -1,
+  "AllCommits": true,
+  "IncludeEmptyCategories": true,
+  "TestMode": false,
+  "LatestCodeBranch": "develop"
+}
