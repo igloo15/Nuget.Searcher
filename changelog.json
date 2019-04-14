@@ -14,7 +14,7 @@
     {
       "Filter": {
         "Keys": [
-          "#Changes"
+          "#Changes", "#Change"
         ]
       },
       "DisplayName": "Changes"
