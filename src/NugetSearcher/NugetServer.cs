@@ -42,6 +42,11 @@ namespace igloo15.NuGetSearcher
         /// </summary>
         public NC.ILogger Logger { get; set; }
 
+        /// <summary>
+        /// The location where packages are temporarily downloaded too
+        /// </summary>
+        public string TempDownloadLocation { get; set; }
+
         internal SourceRepository Source { get; set; }
 
         internal ISettings NuGetSettings { get; set; }
@@ -51,15 +56,16 @@ namespace igloo15.NuGetSearcher
         /// </summary>
         /// <param name="feedLocation">The feed location</param>
         /// <param name="factory">Add a loggerfactory for logging stuff</param>
-        public NuGetServer(string feedLocation, ILoggerFactory factory = null)
+        internal NuGetServer(string feedLocation, ILoggerFactory factory = null)
         {
             FeedLocation = feedLocation;
-            
+
             Source = Repository.Factory.GetCoreV3(feedLocation);
-            
+
             Logger = new NuGetLogger(factory?.CreateLogger<NuGetLogger>());
 
             NuGetSettings = Settings.LoadDefaultSettings(Directory.GetCurrentDirectory());
+            TempDownloadLocation = NuGetPathContext.Create(NuGetSettings).UserPackageFolder;
         }
 
         /// <summary>
@@ -70,6 +76,20 @@ namespace igloo15.NuGetSearcher
         public NuGetServer LoadLogger(ILoggerFactory factory)
         {
             Logger = new NuGetLogger(factory?.CreateLogger<NuGetLogger>());
+            return this;
+        }
+
+        /// <summary>
+        /// Set the temporary location to download packages and extract
+        /// </summary>
+        /// <param name="path">The location if it doesn't exist it will be created</param>
+        /// <returns>The NuGetServer</returns>
+        public NuGetServer SetTemp(string path)
+        {
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+
+            TempDownloadLocation = path;
             return this;
         }
 
@@ -92,16 +112,16 @@ namespace igloo15.NuGetSearcher
 
             if (TakeAmount.HasValue)
                 take = TakeAmount.Value;
-            
+
             var resource = Source.GetResource<PackageSearchResource>();
 
-            if(resource == null)
+            if (resource == null)
             {
                 Logger.LogError("Failed to acquire search resource for server");
                 return Enumerable.Empty<IPackageSourceMetadata>();
             }
 
-            var results = await resource.SearchAsync(searchTerm, new SearchFilter(includePrerelease), skip, take, Logger, cancelToken);
+            var results = await resource.SearchAsync(searchTerm, new SearchFilter(includePrerelease), skip, take, Logger, cancelToken).ConfigureAwait(false);
 
             return results.Select(p => p.ConvertToProxy(this));
         }
@@ -117,8 +137,7 @@ namespace igloo15.NuGetSearcher
         /// <returns>The results of search</returns>
         public IEnumerable<IPackageSourceMetadata> Search(string searchTerm, bool includePrerelease = false, CancellationToken cancelToken = default(CancellationToken), int skip = 0, int take = 100)
         {
-            return SearchAsync(searchTerm, includePrerelease, cancelToken, skip, take).Result;
+            return Extensions.RunSync(() => SearchAsync(searchTerm, includePrerelease, cancelToken, skip, take));
         }
-
     }
 }

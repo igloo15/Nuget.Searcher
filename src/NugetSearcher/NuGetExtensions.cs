@@ -2,6 +2,7 @@
 using NuGet.Protocol.Core.Types;
 using NuGet.Versioning;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -19,7 +20,7 @@ namespace igloo15.NuGetSearcher
         /// <returns>The latest version</returns>
         public static async Task<NuGetVersion> GetLatestVersion(this IPackageSearchMetadata data)
         {
-            var result = await data.GetVersionsAsync();
+            var result = await data.GetVersionsAsync().ConfigureAwait(false);
             return result.OrderByDescending(vi => vi.Version).Where(vi => !vi.Version.IsPrerelease).Select(vi => vi.Version).FirstOrDefault();
         }
 
@@ -30,7 +31,7 @@ namespace igloo15.NuGetSearcher
         /// <returns>The latest version regardless of pre-release</returns>
         public static async Task<NuGetVersion> GetAbsoluteLatestVersion(this IPackageSearchMetadata data)
         {
-            var result = await data.GetVersionsAsync();
+            var result = await data.GetVersionsAsync().ConfigureAwait(false);
             return result.OrderByDescending(vi => vi.Version).Select(vi => vi.Version).FirstOrDefault();
         }
 
@@ -115,6 +116,28 @@ namespace igloo15.NuGetSearcher
             return new PackageSearchSourceProxy(data, server);
         }
 
+        /// <summary>
+        /// Search the server for all Tags. Only OR Search is possible NuGet Api
+        /// </summary>
+        /// <param name="server">The server being extended</param>
+        /// <param name="TagNames">The tags to search on</param>
+        /// <returns>Search Results</returns>
+        public static async Task<IEnumerable<IPackageSourceMetadata>> SearchContainsAllTagsAsync(this NuGetServer server, params string[] TagNames)
+        {
+            var tagQuery = NuGetSearcherUtility.GetTagQuery(TagNames);
 
+            return await server.SearchAsync(tagQuery).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Search by the id
+        /// </summary>
+        /// <param name="server">Server to search</param>
+        /// <param name="id">The id to search</param>
+        /// <returns>Task of the results</returns>
+        public static async Task<IEnumerable<IPackageSourceMetadata>> SearchByIdAsync(this NuGetServer server, string id)
+        {
+            return await server.SearchAsync($"id:{id}").ConfigureAwait(false);
+        }
     }
 }

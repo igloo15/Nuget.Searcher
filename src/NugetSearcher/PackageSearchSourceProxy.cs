@@ -24,6 +24,14 @@ namespace igloo15.NuGetSearcher
         NuGetServer GetServer();
 
         /// <summary>
+        /// Downloads the specific version of the package and returns the result
+        /// </summary>
+        /// <param name="version">The version to download</param>
+        /// <param name="token">The optional cancellation token</param>
+        /// <returns>The Package Downloaded</returns>
+        IPackageDownload Download(NuGetVersion version, CancellationToken token = default(CancellationToken));
+
+        /// <summary>
         /// Download package with specific version
         /// </summary>
         /// <param name="version">The version of package to download</param>
@@ -47,7 +55,7 @@ namespace igloo15.NuGetSearcher
             _server = server;
         }
 
-        public Task<IEnumerable<VersionInfo>> GetVersionsAsync() => _data.GetVersionsAsync();
+        public async Task<IEnumerable<VersionInfo>> GetVersionsAsync() => await _data.GetVersionsAsync();
 
         public string Authors => _data.Authors;
 
@@ -87,11 +95,14 @@ namespace igloo15.NuGetSearcher
 
         public NuGetServer GetServer() => _server;
 
+        public IPackageDownload Download(NuGetVersion version, CancellationToken token = default(CancellationToken))
+        {
+            return Extensions.RunSync(() => DownloadAsync(version));
+        }
+
         public async Task<IPackageDownload> DownloadAsync(NuGetVersion version, CancellationToken token = default(CancellationToken))
         {
-            var context = NuGetPathContext.Create(_server.NuGetSettings);
-
-            var result = await PackageDownloader.GetDownloadResourceResultAsync(_server.Source, new PackageIdentity(Identity.Id, version), new PackageDownloadContext(new SourceCacheContext()), context.UserPackageFolder, _server.Logger, token);
+            var result = await PackageDownloader.GetDownloadResourceResultAsync(_server.Source, new PackageIdentity(Identity.Id, version), new PackageDownloadContext(new SourceCacheContext()), _server.TempDownloadLocation, _server.Logger, token).ConfigureAwait(false);
 
             if (result.Status != DownloadResourceResultStatus.Available)
             {
@@ -103,9 +114,9 @@ namespace igloo15.NuGetSearcher
 
         public async Task<IPackageDownload> DownloadLatestAsync(bool includePrerelease = false, CancellationToken token = default(CancellationToken))
         {
-            var version = await (includePrerelease ? this.GetAbsoluteLatestVersion() : this.GetLatestVersion());
+            var version = await (includePrerelease ? this.GetAbsoluteLatestVersion().ConfigureAwait(false) : this.GetLatestVersion().ConfigureAwait(false));
 
-            return await DownloadAsync(version, token);
+            return await DownloadAsync(version, token).ConfigureAwait(false);
         }
     }
 }

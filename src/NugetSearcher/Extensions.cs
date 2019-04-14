@@ -1,39 +1,52 @@
 ﻿using NuGet.Protocol.Core.Types;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace igloo15.NuGetSearcher
 {
-    /// <summary>
-    /// Extensions for searching for more things on the nuget server
-    /// </summary>
-    public static class Extensions
+    internal static class Extensions
     {
-        /// <summary>
-        /// Search the server for all Tags. Only OR Search is possible NuGet Api
-        /// </summary>
-        /// <param name="server">The server being extended</param>
-        /// <param name="TagNames">The tags to search on</param>
-        /// <returns>Search Results</returns>
-        public static Task<IEnumerable<IPackageSourceMetadata>> SearchContainsAllTags(this NuGetServer server, params string[] TagNames)
+        public static void CleanDirectory(this string path, Func<string, bool> filter = null)
         {
-            var tagQuery = NuGetSearcherUtility.GetTagQuery(TagNames);
+            if (!Directory.Exists(path))
+                return;
 
-            return server.SearchAsync(tagQuery);
+            foreach (var dir in Directory.GetDirectories(path))
+            {
+                dir.CleanDirectory(filter);
+                if (filter != null && filter(dir))
+                {
+                    if (!Directory.EnumerateFileSystemEntries(dir).Any())
+                    {
+                        Directory.Delete(dir, false);
+                    }
+                }
+            }
         }
 
-        /// <summary>
-        /// Search by the id
-        /// </summary>
-        /// <param name="server">Server to search</param>
-        /// <param name="id">The id to search</param>
-        /// <returns>Task of the results</returns>
-        public static Task<IEnumerable<IPackageSourceMetadata>> SearchById(this NuGetServer server, string id)
-        {
-            return server.SearchAsync($"id:{id}");
-        }
+        private static readonly TaskFactory _taskFactory = new
+        TaskFactory(CancellationToken.None,
+                    TaskCreationOptions.None,
+                    TaskContinuationOptions.None,
+                    TaskScheduler.Default);
 
+        public static TResult RunSync<TResult>(Func<Task<TResult>> func)
+            => _taskFactory
+                .StartNew(func)
+                .Unwrap()
+                .GetAwaiter()
+                .GetResult();
+
+        public static void RunSync(Func<Task> func)
+            => _taskFactory
+                .StartNew(func)
+                .Unwrap()
+                .GetAwaiter()
+                .GetResult();
     }
 }

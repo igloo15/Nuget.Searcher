@@ -1,13 +1,11 @@
-
-
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading;
-using System.Linq;
 using NuGet.Common;
 using NuGet.Packaging.Core;
 using NuGet.Versioning;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading;
 
 namespace igloo15.NuGetSearcher
 {
@@ -35,21 +33,36 @@ namespace igloo15.NuGetSearcher
         IEnumerable<string> GetFiles();
 
         /// <summary>
+        /// Copy the entire contents of the package to destination folder
+        /// </summary>
+        /// <param name="dest">The destination folder</param>
+        /// <param name="token">The optional cancellation token</param>
+        IEnumerable<string> CopyFiles(string dest, CancellationToken token = default(CancellationToken));
+
+        /// <summary>
         /// Copy files from package to a new destination
         /// </summary>
         /// <param name="dest">The destination to copy files too</param>
         /// <param name="filter">Optional function to filter what packages go to destination and which don't</param>
         /// <param name="token">Optional cancellation token</param>
-        void CopyFiles(string dest, Func<string, bool> filter = null, CancellationToken token = default(CancellationToken));
+        IEnumerable<string> CopyFiles(string dest, Func<string, bool> filter, CancellationToken token = default(CancellationToken));
+
+        /// <summary>
+        /// Copy the files from the package to a new destination with the given settings
+        /// </summary>
+        /// <param name="dest">The new destination</param>
+        /// <param name="settings">The settings</param>
+        /// <param name="token">The optional cancellation token</param>
+        IEnumerable<string> CopyFiles(string dest, NuGetCopySettings settings, CancellationToken token = default(CancellationToken));
     }
 
     internal class PackageCoreReaderProxy : IPackageDownload, IPackageCoreReader
     {
         private IPackageCoreReader _reader;
-        private IPackageSourceMetadata _metadata;
+        private PackageSearchSourceProxy _metadata;
         private NuGetVersion _version;
 
-        public PackageCoreReaderProxy(IPackageCoreReader reader, IPackageSourceMetadata metadata, NuGetVersion version)
+        public PackageCoreReaderProxy(IPackageCoreReader reader, PackageSearchSourceProxy metadata, NuGetVersion version)
         {
             _reader = reader;
             _metadata = metadata;
@@ -78,14 +91,31 @@ namespace igloo15.NuGetSearcher
 
         public Stream GetStream(string path) => _reader.GetStream(path);
 
-        public void CopyFiles(string dest, Func<string, bool> filter = null, CancellationToken token = default(CancellationToken))
+        public IEnumerable<string> CopyFiles(string dest, CancellationToken token = default(CancellationToken))
         {
-            var files = filter != null ? GetFiles().Where(filter) : GetFiles();
-            CopyFiles(dest, files, ExtractFile, _metadata.GetServer().Logger, token);
+            return CopyFiles(dest, new NuGetCopySettings(), token);
         }
 
-        private string ExtractFile(string source, string target, Stream readStream)
+        public IEnumerable<string> CopyFiles(string dest, Func<string, bool> filter, CancellationToken token = default(CancellationToken))
         {
+            return CopyFiles(dest, new NuGetCopySettings() { Filter = filter }, token);
+        }
+
+        public IEnumerable<string> CopyFiles(string dest, NuGetCopySettings settings, CancellationToken token = default(CancellationToken))
+        {
+            var files = GetFiles().Where(settings.Filter);
+
+            var resultFiles = CopyFiles(dest, files, (source, target, readStream) => ExtractFile(source, target, readStream, settings, dest), _metadata.GetServer().Logger, token);
+
+            dest.CleanDirectory(settings.RemoveEmptyFilter);
+
+            return resultFiles;
+        }
+
+        private string ExtractFile(string source, string target, Stream readStream, NuGetCopySettings settings, string dest)
+        {
+            target = Path.Combine(dest, settings.PathAlter(target.Replace(dest, "")));
+
             if (Path.IsPathRooted(source))
             {
                 File.Copy(source, target, true);
@@ -102,6 +132,7 @@ namespace igloo15.NuGetSearcher
         }
 
         #region IDisposable Support
+
         private bool disposedValue = false; // To detect redundant calls
 
         protected virtual void Dispose(bool disposing)
@@ -136,7 +167,6 @@ namespace igloo15.NuGetSearcher
             // GC.SuppressFinalize(this);
         }
 
-
-        #endregion
+        #endregion IDisposable Support
     }
 }

@@ -7,24 +7,34 @@ using Microsoft.Extensions.Logging;
 
 namespace NuGetSearcher.Client
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             Console.WriteLine("Starting Test");
 
             var factory = new LoggerFactory().AddConsole();
-            var results = NuGetSearcherUtility.NuGetStandardFeedV2.LoadLogger(factory).Search("test").Where(p => p.GetTags().Contains("Microsoft"));
+            var results = NuGetSearcherUtility.NuGetStandardFeedV2.LoadLogger(factory).Search("test", true).Where(p => p.GetTags().Contains("Microsoft"));
 
-
-            foreach(var result in results)
+            foreach (var result in results)
             {
                 Console.WriteLine($"Package : {result.Identity.Id}, Total Downloads : {result.DownloadCount}");
                 var package = result.DownloadLatestAsync().Result;
                 Console.WriteLine(package.GetIdentity().Version.ToFullString());
-                package.CopyFiles("./test", f => f.StartsWith("lib/net45"));
-            }
+                var settings = new NuGetCopySettings()
+                {
+                    Filter = f =>
+                    {
+                        var dirName = Path.GetDirectoryName(f);
+                        var filterResult = dirName == "lib\\net45";
+                        return filterResult;
+                    },
+                    PathAlter = t => Path.GetFileName(t)
+                };
 
+                package.CopyFiles("../../test/bill", settings);
+                package.CopyFiles("../test/otter", settings);
+            }
 
             Console.WriteLine();
 
@@ -36,4 +46,3 @@ namespace NuGetSearcher.Client
         }
     }
 }
-
