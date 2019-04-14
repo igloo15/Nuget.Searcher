@@ -1,0 +1,86 @@
+{
+  "Categories": [
+    {
+      "Filter": {
+        "Keys": [
+          "#Add"
+        ],
+        "RemoveTokens": [],
+        "RemoveAllKey": true,
+        "MatchCase": false
+      },
+      "IsSummary": false,
+      "IsDefault": false,
+      "DisplayName": "Add"
+    },
+    {
+      "Filter": {
+        "Keys": [
+          "#Changes"
+        ],
+        "RemoveTokens": [],
+        "RemoveAllKey": true,
+        "MatchCase": false
+      },
+      "IsSummary": false,
+      "IsDefault": false,
+      "DisplayName": "Other Changes"
+    },
+    {
+      "Filter": {
+        "Keys": [
+          "#Summary"
+        ],
+        "RemoveTokens": [],
+        "RemoveAllKey": true,
+        "MatchCase": false
+      },
+      "IsSummary": true,
+      "IsDefault": false,
+      "DisplayName": "Summary"
+    }
+  ],
+  "Links": [
+    {
+      "Filter": {
+        "Keys": [
+          "#issue"
+        ],
+        "RemoveTokens": [
+          "#"
+        ],
+        "RemoveAllKey": false,
+        "MatchCase": false
+      },
+      "UrlTemplate": "https://github.com/temp_user/temp_project/issues/{LinkCleanKey}"
+    }
+  ],
+  "VersionFilter": {
+    "Keys": [
+      "v"
+    ],
+    "RemoveTokens": [],
+    "RemoveAllKey": true,
+    "MatchCase": false
+  },
+  "Templates": {
+    "TitleTemplate": "# Changelog",
+    "VersionTemplate": "## {Version}",
+    "SummarySentenceTemplate": "{Message}. ",
+    "CategoryTemplate": "### {Category}",
+    "IssueTemplate": "* {Message} {Links}",
+    "LinkTemplate": "[{LinkCleanKey}]({Url})",
+    "NoIssuesTemplate": "*  N/A ",
+    "EndVersionTemplate": "\n",
+    "EndCategoryTemplate": "\n",
+    "EndChangelogTemplate": ""
+  },
+  "ChangelogLocation": "./CHANGELOG.md",
+  "GitRepoLocation": ".",
+  "UnreleasedTitle": "Unreleased",
+  "GitRepoCommitLimit": -1,
+  "AllCommits": true,
+  "IncludeEmptyCategories": true,
+  "TestMode": false,
+  "LatestCodeBranch": "develop"
+}

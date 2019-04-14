@@ -1,12 +1,16 @@
-﻿using NuGet.Packaging;
+﻿using NuGet.Configuration;
+using NuGet.PackageManagement;
+using NuGet.Packaging;
 using NuGet.Packaging.Core;
 using NuGet.Protocol.Core.Types;
+using NuGet.Versioning;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
-namespace Igloo15.NuGetSearcher
+namespace igloo15.NuGetSearcher
 {
     /// <summary>
     /// Combines IPackageSearchMetadata and NuGetServer to provide more functionality
@@ -18,6 +22,18 @@ namespace Igloo15.NuGetSearcher
         /// </summary>
         /// <returns>The NuGetServer</returns>
         NuGetServer GetServer();
+
+        /// <summary>
+        /// Download package with specific version
+        /// </summary>
+        /// <param name="version">The version of package to download</param>
+        /// <param name="token">An optional cancellation token</param>
+        Task<IPackageDownload> DownloadAsync(NuGetVersion version, CancellationToken token = default(CancellationToken));
+
+        /// <summary>
+        /// Download the newest version of the package
+        /// </summary>
+        Task<IPackageDownload> DownloadLatestAsync(bool includePrerelease = false, CancellationToken token = default(CancellationToken));
     }
 
     internal class PackageSearchSourceProxy : IPackageSourceMetadata
@@ -70,5 +86,26 @@ namespace Igloo15.NuGetSearcher
         public LicenseMetadata LicenseMetadata => _data.LicenseMetadata;
 
         public NuGetServer GetServer() => _server;
+
+        public async Task<IPackageDownload> DownloadAsync(NuGetVersion version, CancellationToken token = default(CancellationToken))
+        {
+            var context = NuGetPathContext.Create(_server.NuGetSettings);
+
+            var result = await PackageDownloader.GetDownloadResourceResultAsync(_server.Source, new PackageIdentity(Identity.Id, version), new PackageDownloadContext(new SourceCacheContext()), context.UserPackageFolder, _server.Logger, token);
+
+            if (result.Status != DownloadResourceResultStatus.Available)
+            {
+                throw new Exception("Failed to download");
+            }
+
+            return new PackageCoreReaderProxy(result.PackageReader, this, version);
+        }
+
+        public async Task<IPackageDownload> DownloadLatestAsync(bool includePrerelease = false, CancellationToken token = default(CancellationToken))
+        {
+            var version = await (includePrerelease ? this.GetAbsoluteLatestVersion() : this.GetLatestVersion());
+
+            return await DownloadAsync(version, token);
+        }
     }
 }

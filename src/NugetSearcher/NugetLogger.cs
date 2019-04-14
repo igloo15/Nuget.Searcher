@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using NuGetCommon = NuGet.Common;
 
-namespace Igloo15.NuGetSearcher
+namespace igloo15.NuGetSearcher
 {
     /// <summary>
     /// Microsoft.Extensions.Logging adaptor to NuGet Logging

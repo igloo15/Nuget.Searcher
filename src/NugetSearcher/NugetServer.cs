@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System;
+using Microsoft.Extensions.Logging;
 using NC = NuGet.Common;
 using NuGet.Protocol;
 using NuGet.Protocol.Core.Types;
@@ -6,8 +7,10 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
+using NuGet.Configuration;
+using System.IO;
 
-namespace Igloo15.NuGetSearcher
+namespace igloo15.NuGetSearcher
 {
     /// <summary>
     /// The base server class which you can search against
@@ -41,18 +44,33 @@ namespace Igloo15.NuGetSearcher
 
         internal SourceRepository Source { get; set; }
 
+        internal ISettings NuGetSettings { get; set; }
+
         /// <summary>
         /// The base constructor for a feed
         /// </summary>
         /// <param name="feedLocation">The feed location</param>
-        /// <param name="feedType">The type of feed</param>
         /// <param name="factory">Add a loggerfactory for logging stuff</param>
-        public NuGetServer(string feedLocation, FeedType feedType, ILoggerFactory factory = null)
+        public NuGetServer(string feedLocation, ILoggerFactory factory = null)
         {
             FeedLocation = feedLocation;
-
-            Source = Repository.Factory.GetCoreV3(feedLocation, feedType);
+            
+            Source = Repository.Factory.GetCoreV3(feedLocation);
+            
             Logger = new NuGetLogger(factory?.CreateLogger<NuGetLogger>());
+
+            NuGetSettings = Settings.LoadDefaultSettings(Directory.GetCurrentDirectory());
+        }
+
+        /// <summary>
+        /// Load a LoggerFactory for the server
+        /// </summary>
+        /// <param name="factory">The loggerfactory server</param>
+        /// <returns>This NuGetServer</returns>
+        public NuGetServer LoadLogger(ILoggerFactory factory)
+        {
+            Logger = new NuGetLogger(factory?.CreateLogger<NuGetLogger>());
+            return this;
         }
 
         /// <summary>
@@ -75,7 +93,15 @@ namespace Igloo15.NuGetSearcher
             if (TakeAmount.HasValue)
                 take = TakeAmount.Value;
             
-            var results = await Source.GetResource<PackageSearchResource>().SearchAsync(searchTerm, new SearchFilter(includePrerelease), skip, take, Logger, cancelToken);
+            var resource = Source.GetResource<PackageSearchResource>();
+
+            if(resource == null)
+            {
+                Logger.LogError("Failed to acquire search resource for server");
+                return Enumerable.Empty<IPackageSourceMetadata>();
+            }
+
+            var results = await resource.SearchAsync(searchTerm, new SearchFilter(includePrerelease), skip, take, Logger, cancelToken);
 
             return results.Select(p => p.ConvertToProxy(this));
         }

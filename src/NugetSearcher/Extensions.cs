@@ -4,8 +4,11 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Igloo15.NuGetSearcher
+namespace igloo15.NuGetSearcher
 {
+    /// <summary>
+    /// Extensions for searching for more things on the nuget server
+    /// </summary>
     public static class Extensions
     {
         /// <summary>

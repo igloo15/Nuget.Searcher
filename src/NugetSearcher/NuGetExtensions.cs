@@ -5,7 +5,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Igloo15.NuGetSearcher
+namespace igloo15.NuGetSearcher
 {
     /// <summary>
     /// Extensions for NuGet Stuff
@@ -75,6 +75,26 @@ namespace Igloo15.NuGetSearcher
         }
 
         /// <summary>
+        /// Get the id of the package
+        /// </summary>
+        /// <param name="data">The package download extending</param>
+        /// <returns>The id</returns>
+        public static string GetId(this IPackageDownload data)
+        {
+            return data.GetIdentity().Id;
+        }
+
+        /// <summary>
+        /// Get the PackageIdentity
+        /// </summary>
+        /// <param name="data">The package download extending</param>
+        /// <returns>The package identity</returns>
+        public static PackageIdentity GetIdentity(this IPackageDownload data)
+        {
+            return data.GetMetadata().Identity;
+        }
+
+        /// <summary>
         /// Get tags separated into an array
         /// </summary>
         /// <param name="data">The package</param>
@@ -82,18 +102,6 @@ namespace Igloo15.NuGetSearcher
         public static string[] GetTags(this IPackageSearchMetadata data)
         {
             return data.Tags.Split(' ');
-        }
-
-        /// <summary>
-        /// Download the package
-        /// </summary>
-        /// <param name="data">The data</param>
-        /// <param name="folder">The folder to download too</param>
-        /// <param name="version">The version to download</param>
-        /// <returns>The stream to download</returns>
-        public static IPackageDownloadStream GetDownloadStream(this IPackageSourceMetadata data, string folder, NuGetVersion version)
-        {
-            return new DownloadStream(data.GetServer(), new PackageIdentity(data.Identity.Id, version), folder);
         }
 
         /// <summary>
@@ -106,5 +114,7 @@ namespace Igloo15.NuGetSearcher
         {
             return new PackageSearchSourceProxy(data, server);
         }
+
+
     }
 }

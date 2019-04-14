@@ -3,8 +3,9 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
   <PropertyGroup>
+    <AssemblyName>igloo15.$(MSBuildProjectName)</AssemblyName>
     <RootNamespace>igloo15.$(MSBuildProjectName)</RootNamespace>
-    <BaseOutputPath>$(MSBuildProjectFullPath)\..\..\dist\$(MSBuildProjectName)</BaseOutputPath>
+    <BaseOutputPath>$(MSBuildProjectDirectory)\..\..\dist\$(MSBuildProjectName)</BaseOutputPath>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
@@ -17,6 +18,7 @@
     <PackageProjectUrl>https://github.com/igloo15/Nuget.Searcher</PackageProjectUrl>
     <RepositoryUrl>$(PackageProjectUrl).git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
+    <PackageReleaseNotes>See $(PackageProjectUrl)/blob/master/CHANGELOG.md for release notes</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
