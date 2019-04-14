@@ -4,6 +4,7 @@
 first official release of NuGet.Searcher Api hopefully allows more people to easily use nuget package api.. 
 
 ### Add
+*  async and sync methods to get all packages in a feed
 *  NuGetServer now has TempDowloadLocation to determine where downloads should first be downloaded to before copied
 *  NuGetCopy settings added to simplify the argument passing when Copying files
 *  Async helper methods added
@@ -17,6 +18,10 @@ first official release of NuGet.Searcher Api hopefully allows more people to eas
 
 
 ### Changes
+*  update package description
+*  update readme documentation
+*  move sync methods to extensions
+*  update api documentation
 *  update api documentation
 *  move sync methods to extensions
 *  update changelog configuration file
