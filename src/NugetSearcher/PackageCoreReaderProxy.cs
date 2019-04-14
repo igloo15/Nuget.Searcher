@@ -92,6 +92,7 @@ namespace igloo15.NuGetSearcher
             }
             else
             {
+                Directory.CreateDirectory(Path.GetDirectoryName(target));
                 using (var fileStream = new FileStream(target, FileMode.OpenOrCreate))
                 {
                     readStream.CopyTo(fileStream);

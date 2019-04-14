@@ -22,12 +22,6 @@ namespace NuGetSearcher.Client
                 Console.WriteLine($"Package : {result.Identity.Id}, Total Downloads : {result.DownloadCount}");
                 var package = result.DownloadLatestAsync().Result;
                 Console.WriteLine(package.GetIdentity().Version.ToFullString());
-                Console.WriteLine(package.GetIdentity().Version.ToNormalizedString());
-                Console.WriteLine(package.GetIdentity().Version.ToString());
-                foreach(var file in package.GetFiles())
-                {
-                    Console.WriteLine(file);
-                }
                 package.CopyFiles("./test", f => f.StartsWith("lib/net45"));
             }
 
