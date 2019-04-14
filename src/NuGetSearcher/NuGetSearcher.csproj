@@ -13,8 +13,8 @@
     <PackageVersion>$(Version)</PackageVersion>
     <PackageId>igloo15.$(MSBuildProjectName)</PackageId>
     <Authors>igloo15</Authors>
-    <Description>A Cake addin used to call the changelog commands to generate a config or create a changelog file</Description>
-    <PackageTags>Cake Build Addins Changelog Extensions</PackageTags>
+    <Description>This library allows you to easily interact with nuget feeds either over the network or locally. You can search, download, and copy package contents</Description>
+    <PackageTags>NuGet Library Search Download NetStandard</PackageTags>
     <PackageProjectUrl>https://github.com/igloo15/Nuget.Searcher</PackageProjectUrl>
     <RepositoryUrl>$(PackageProjectUrl).git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
