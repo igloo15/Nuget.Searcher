@@ -2,19 +2,20 @@
 
 ## Namespaces
 
-### [Igloo15.NuGetSearcher](./Igloo15/NuGetSearcher/README.md)
+### [igloo15.NuGetSearcher](./igloo15/NuGetSearcher/README.md)
 
-- [`Extensions`](./Igloo15/NuGetSearcher/Extensions.md)
-- [`IPackageDownloadStream`](./Igloo15/NuGetSearcher/IPackageDownloadStream.md)
-	- Stream to get package
-- [`IPackageSourceMetadata`](./Igloo15/NuGetSearcher/IPackageSourceMetadata.md)
+- [`IPackageDownload`](./igloo15/NuGetSearcher/IPackageDownload.md)
+	- A package downloaded
+- [`IPackageSourceMetadata`](./igloo15/NuGetSearcher/IPackageSourceMetadata.md)
 	- Combines IPackageSearchMetadata and NuGetServer to provide more functionality
-- [`NuGetExtensions`](./Igloo15/NuGetSearcher/NuGetExtensions.md)
+- [`NuGetCopySettings`](./igloo15/NuGetSearcher/NuGetCopySettings.md)
+	- Settings for copying files from download to final resting place
+- [`NuGetExtensions`](./igloo15/NuGetSearcher/NuGetExtensions.md)
 	- Extensions for NuGet Stuff
-- [`NuGetLogger`](./Igloo15/NuGetSearcher/NuGetLogger.md)
+- [`NuGetLogger`](./igloo15/NuGetSearcher/NuGetLogger.md)
 	- Microsoft.Extensions.Logging adaptor to NuGet Logging
-- [`NuGetSearcherUtility`](./Igloo15/NuGetSearcher/NuGetSearcherUtility.md)
+- [`NuGetSearcherUtility`](./igloo15/NuGetSearcher/NuGetSearcherUtility.md)
 	- Utility functions for NuGetSearch
-- [`NuGetServer`](./Igloo15/NuGetSearcher/NuGetServer.md)
+- [`NuGetServer`](./igloo15/NuGetSearcher/NuGetServer.md)
 	- The base server class which you can search against
 

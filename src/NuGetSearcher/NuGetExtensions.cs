@@ -4,6 +4,7 @@ using NuGet.Versioning;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace igloo15.NuGetSearcher
@@ -114,6 +115,30 @@ namespace igloo15.NuGetSearcher
         public static IPackageSourceMetadata ConvertToProxy(this IPackageSearchMetadata data, NuGetServer server)
         {
             return new PackageSearchSourceProxy(data, server);
+        }
+
+        /// <summary>
+        /// Downloads the specific version of the package and returns the result
+        /// </summary>
+        /// <param name="package">The package being extended</param>
+        /// <param name="version">The version to download</param>
+        /// <param name="token">The optional cancellation token</param>
+        /// <returns>The Package Downloaded</returns>
+        public static IPackageDownload Download(this IPackageSourceMetadata package, NuGetVersion version, CancellationToken token = default(CancellationToken))
+        {
+            return Extensions.RunSync(() => package.DownloadAsync(version, token));
+        }
+
+        /// <summary>
+        /// Downloads the specific version of the package and returns the result
+        /// </summary>
+        /// <param name="package">The package being extended</param>
+        /// <param name="includePrerelease">Determines if prerelease packages should be included</param>
+        /// <param name="token">The optional cancellation token</param>
+        /// <returns>The Package Downloaded</returns>
+        public static IPackageDownload DownloadLatest(this IPackageSourceMetadata package, bool includePrerelease = false, CancellationToken token = default(CancellationToken))
+        {
+            return Extensions.RunSync(() => package.DownloadLatestAsync(includePrerelease, token));
         }
 
         /// <summary>

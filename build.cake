@@ -1,5 +1,5 @@
 
-#l "nuget:?package=Cake.igloo15.Scripts.Bundle.CSharp&version=2.0.1"
+#l "nuget:?package=Cake.igloo15.Scripts.Bundle.CSharp&version=2.0.2"
 
 var target = Argument<string>("target", "Default");
 
@@ -21,7 +21,7 @@ Task("Default")
     .CompleteTask();
 
 Task("Deploy")
-	.IsDependentOn("CSharp-Bundle-Publish-All")
+	.IsDependentOn("CSharp-Bundle-Push-All")
     .CompleteTask();
 
 RunTarget(target);

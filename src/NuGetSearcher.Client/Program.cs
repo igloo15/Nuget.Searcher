@@ -14,12 +14,12 @@ namespace NuGetSearcher.Client
             Console.WriteLine("Starting Test");
 
             var factory = new LoggerFactory().AddConsole();
-            var results = NuGetSearcherUtility.NuGetStandardFeedV2.LoadLogger(factory).Search("test", true).Where(p => p.GetTags().Contains("Microsoft"));
+            var results = NuGetSearcherUtility.NuGetStandardFeedV2.LoadLogger(factory).SetTemp("./testcache").Search("test", true).Where(p => p.GetTags().Contains("Microsoft"));
 
             foreach (var result in results)
             {
                 Console.WriteLine($"Package : {result.Identity.Id}, Total Downloads : {result.DownloadCount}");
-                var package = result.DownloadLatestAsync().Result;
+                var package = result.DownloadLatest();
                 Console.WriteLine(package.GetIdentity().Version.ToFullString());
                 var settings = new NuGetCopySettings()
                 {

@@ -24,14 +24,6 @@ namespace igloo15.NuGetSearcher
         NuGetServer GetServer();
 
         /// <summary>
-        /// Downloads the specific version of the package and returns the result
-        /// </summary>
-        /// <param name="version">The version to download</param>
-        /// <param name="token">The optional cancellation token</param>
-        /// <returns>The Package Downloaded</returns>
-        IPackageDownload Download(NuGetVersion version, CancellationToken token = default(CancellationToken));
-
-        /// <summary>
         /// Download package with specific version
         /// </summary>
         /// <param name="version">The version of package to download</param>
@@ -94,11 +86,6 @@ namespace igloo15.NuGetSearcher
         public LicenseMetadata LicenseMetadata => _data.LicenseMetadata;
 
         public NuGetServer GetServer() => _server;
-
-        public IPackageDownload Download(NuGetVersion version, CancellationToken token = default(CancellationToken))
-        {
-            return Extensions.RunSync(() => DownloadAsync(version));
-        }
 
         public async Task<IPackageDownload> DownloadAsync(NuGetVersion version, CancellationToken token = default(CancellationToken))
         {

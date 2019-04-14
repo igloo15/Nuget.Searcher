@@ -9,34 +9,31 @@
         "RemoveAllKey": true,
         "MatchCase": false
       },
-      "IsSummary": false,
-      "IsDefault": false,
       "DisplayName": "Add"
     },
     {
       "Filter": {
         "Keys": [
           "#Changes"
-        ],
-        "RemoveTokens": [],
-        "RemoveAllKey": true,
-        "MatchCase": false
+        ]
       },
-      "IsSummary": false,
-      "IsDefault": false,
-      "DisplayName": "Other Changes"
+      "DisplayName": "Changes"
+    },
+    {
+      "Filter": {
+        "Keys": [
+          "#Fix", "#Fixes", "#Fixed"
+        ]
+      },
+      "DisplayName": "Fixes"
     },
     {
       "Filter": {
         "Keys": [
           "#Summary"
-        ],
-        "RemoveTokens": [],
-        "RemoveAllKey": true,
-        "MatchCase": false
+        ]
       },
       "IsSummary": true,
-      "IsDefault": false,
       "DisplayName": "Summary"
     }
   ],
@@ -44,24 +41,21 @@
     {
       "Filter": {
         "Keys": [
-          "#issue"
+          "#issue-"
         ],
         "RemoveTokens": [
-          "#"
+          "#issue-"
         ],
         "RemoveAllKey": false,
         "MatchCase": false
       },
-      "UrlTemplate": "https://github.com/temp_user/temp_project/issues/{LinkCleanKey}"
+      "UrlTemplate": "https://github.com/igloo15/Nuget.Searcher/issues/{LinkCleanKey}"
     }
   ],
   "VersionFilter": {
     "Keys": [
       "v"
-    ],
-    "RemoveTokens": [],
-    "RemoveAllKey": true,
-    "MatchCase": false
+    ]
   },
   "Templates": {
     "TitleTemplate": "# Changelog",

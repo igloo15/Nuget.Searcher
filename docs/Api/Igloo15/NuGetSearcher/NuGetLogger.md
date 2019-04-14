@@ -1,6 +1,6 @@
 # [NuGetLogger](./NuGetLogger.md)
 
-Namespace: [Igloo15]() > [NuGetSearcher](./README.md)
+Namespace: [igloo15]() > [NuGetSearcher](./README.md)
 
 Assembly: igloo15.NuGetSearcher.dll
 
