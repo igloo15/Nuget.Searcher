@@ -4,6 +4,7 @@ using NuGet.Packaging;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace igloo15.NuGetSearcher
@@ -16,17 +17,32 @@ namespace igloo15.NuGetSearcher
         /// <summary>
         /// The standard nuget.org feed V2 api
         /// </summary>
-        public static NuGetServer NuGetStandardFeedV2 => new NuGetServer("https://www.nuget.org/api/v2");
+        public static NuGetServer NuGetStandardFeedV2 => new NuGetServer(NuGetConstants.V2FeedUrl);
 
         /// <summary>
         /// The standard nuget.org feed V3 api
         /// </summary>
-        public static NuGetServer NuGetStandardFeedV3 => new NuGetServer("https://api.nuget.org/v3/index.json");
+        public static NuGetServer NuGetStandardFeedV3 => new NuGetServer(NuGetConstants.V3FeedUrl);
 
         /// <summary>
         /// The local global packages feed
         /// </summary>
-        public static NuGetServer GlobalPackagesFeed => new NuGetServer(NuGetPathContext.Create(Settings.LoadDefaultSettings(Directory.GetCurrentDirectory())).UserPackageFolder);
+        public static NuGetServer GlobalPackagesFeed => new NuGetServer(NuGetPaths.UserPackageFolder);
+
+        /// <summary>
+        /// Zero or More NuGet Fallback Feeds these are global feeds similar to the GAC from the past
+        /// </summary>
+        public static IEnumerable<NuGetServer> FallbackFeeds => NuGetPaths.FallbackPackageFolders.Select(f => new NuGetServer(f));
+
+        /// <summary>
+        /// The global machine settings in relation to current working directory
+        /// </summary>
+        public static ISettings NuGetSettings => Settings.LoadDefaultSettings(Directory.GetCurrentDirectory());
+
+        /// <summary>
+        /// The Global NuGetPaths based on settings loaded from current working directory
+        /// </summary>
+        public static NuGetPathContext NuGetPaths => NuGetPathContext.Create(NuGetSettings);
 
         /// <summary>
         /// Create a server with a custom location
@@ -45,7 +61,7 @@ namespace igloo15.NuGetSearcher
         {
             StringBuilder sb = new StringBuilder();
 
-            foreach(var tag in TagNames)
+            foreach (var tag in TagNames)
             {
                 sb.Append($"tags: {tag} ");
             }

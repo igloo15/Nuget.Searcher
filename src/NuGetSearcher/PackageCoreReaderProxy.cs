@@ -54,6 +54,14 @@ namespace igloo15.NuGetSearcher
         /// <param name="settings">The settings</param>
         /// <param name="token">The optional cancellation token</param>
         IEnumerable<string> CopyFiles(string dest, NuGetCopySettings settings, CancellationToken token = default(CancellationToken));
+
+        /// <summary>
+        /// Copy the files from the package to a new destination with the given settings
+        /// </summary>
+        /// <param name="dest">The new destination</param>
+        /// <param name="nugetFolder">The folder in the nuget package to copy to destination</param>
+        /// <param name="token">The optional cancellation token</param>
+        IEnumerable<string> CopyFiles(string dest, string nugetFolder, CancellationToken token = default(CancellationToken));
     }
 
     internal class PackageCoreReaderProxy : IPackageDownload, IPackageCoreReader
@@ -105,14 +113,23 @@ namespace igloo15.NuGetSearcher
         {
             var files = GetFiles().Where(settings.Filter);
 
-            var resultFiles = CopyFiles(dest, files, (source, target, readStream) => ExtractFile(source, target, readStream, settings, dest), _metadata.GetServer().Logger, token);
+            var resultFiles = CopyFiles(dest, files, (source, target, readStream) => ExtractFile(source, target, dest, readStream, settings), _metadata.GetServer().Logger, token);
 
             dest.CleanDirectory(settings.RemoveEmptyFilter);
 
             return resultFiles;
         }
 
-        private string ExtractFile(string source, string target, Stream readStream, NuGetCopySettings settings, string dest)
+        public IEnumerable<string> CopyFiles(string dest, string nugetFolder, CancellationToken token = default(CancellationToken))
+        {
+            return CopyFiles(dest, new NuGetCopySettings()
+            {
+                Filter = (f) => f.StartsWith(nugetFolder),
+                PathAlter = (f) => f.Replace(nugetFolder, "")
+            }, token);
+        }
+
+        private string ExtractFile(string source, string target, string dest, Stream readStream, NuGetCopySettings settings)
         {
             target = Path.Combine(dest, settings.PathAlter(target.Replace(dest, "")));
 

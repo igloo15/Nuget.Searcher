@@ -4,6 +4,7 @@ using igloo15.NuGetSearcher;
 using System;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using NuGet.Configuration;
 
 namespace NuGetSearcher.Client
 {
@@ -15,6 +16,10 @@ namespace NuGetSearcher.Client
 
             var factory = new LoggerFactory().AddConsole();
             var results = NuGetSearcherUtility.NuGetStandardFeedV2.LoadLogger(factory).SetTemp("./testcache").Search("test", true).Where(p => p.GetTags().Contains("Microsoft"));
+            var folders = NuGetSearcherUtility.NuGetPaths.FallbackPackageFolders.ToList();
+
+            foreach (var folder in folders)
+                Console.WriteLine(folder);
 
             foreach (var result in results)
             {
