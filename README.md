@@ -9,7 +9,7 @@ NuGet Package API allows you to search and download NuGet Packages. Support for 
 
 ### NuGet Package
 
-[![Nuget](https://img.shields.io/nuget/vpre/igloo15.NuGet.Searcher.svg?label=igloo15.NuGetSearcher)](https://www.nuget.org/packages/igloo15.NuGetSearcher/)
+[![Nuget](https://img.shields.io/nuget/vpre/Igloo15.NuGetSearcher.svg?label=Igloo15.NuGetSearcher)](https://www.nuget.org/packages/Igloo15.NuGetSearcher/)
 
 ## Build
 

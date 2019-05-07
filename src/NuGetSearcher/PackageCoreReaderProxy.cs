@@ -33,6 +33,13 @@ namespace igloo15.NuGetSearcher
         IEnumerable<string> GetFiles();
 
         /// <summary>
+        /// Folder exists in Package
+        /// </summary>
+        /// <param name="folder">The folder to search for</param>
+        /// <returns>True if folder exists</returns>
+        bool FolderExists(string folder);
+
+        /// <summary>
         /// Copy the entire contents of the package to destination folder
         /// </summary>
         /// <param name="dest">The destination folder</param>
@@ -54,6 +61,14 @@ namespace igloo15.NuGetSearcher
         /// <param name="settings">The settings</param>
         /// <param name="token">The optional cancellation token</param>
         IEnumerable<string> CopyFiles(string dest, NuGetCopySettings settings, CancellationToken token = default(CancellationToken));
+
+        /// <summary>
+        /// Copy the files from the package to a new destination with the given settings
+        /// </summary>
+        /// <param name="dest">The new destination</param>
+        /// <param name="nugetFolder">The folder in the nuget package to copy to destination</param>
+        /// <param name="token">The optional cancellation token</param>
+        IEnumerable<string> CopyFiles(string dest, string nugetFolder, CancellationToken token = default(CancellationToken));
     }
 
     internal class PackageCoreReaderProxy : IPackageDownload, IPackageCoreReader
@@ -91,6 +106,13 @@ namespace igloo15.NuGetSearcher
 
         public Stream GetStream(string path) => _reader.GetStream(path);
 
+        public bool FolderExists(string folder)
+        {
+            folder = folder.Replace(@"\\", "/").Replace('\\', '/');
+
+            return GetFiles().Any(s => s.StartsWith(folder));
+        }
+
         public IEnumerable<string> CopyFiles(string dest, CancellationToken token = default(CancellationToken))
         {
             return CopyFiles(dest, new NuGetCopySettings(), token);
@@ -105,30 +127,57 @@ namespace igloo15.NuGetSearcher
         {
             var files = GetFiles().Where(settings.Filter);
 
-            var resultFiles = CopyFiles(dest, files, (source, target, readStream) => ExtractFile(source, target, readStream, settings, dest), _metadata.GetServer().Logger, token);
+            var resultFiles = CopyFiles(dest, files, (source, target, readStream) => ExtractFile(source, target, dest, readStream, settings), _metadata.GetServer().Logger, token);
 
             dest.CleanDirectory(settings.RemoveEmptyFilter);
 
             return resultFiles;
         }
 
-        private string ExtractFile(string source, string target, Stream readStream, NuGetCopySettings settings, string dest)
+        public IEnumerable<string> CopyFiles(string dest, string nugetFolder, CancellationToken token = default(CancellationToken))
         {
-            target = Path.Combine(dest, settings.PathAlter(target.Replace(dest, "")));
+            var newNugetFolder = nugetFolder.Replace(@"\\", "/").Replace('\\', '/');
+            return CopyFiles(dest, new NuGetCopySettings()
+            {
+                Filter = (f) => f.StartsWith(newNugetFolder),
+                PathAlter = (f) => f.Replace(newNugetFolder, "")
+            }, token);
+        }
 
+        private string ExtractFile(string source, string target, string dest, Stream readStream, NuGetCopySettings settings)
+        {
+            var destinationLessTarget = RemovePaths(target, dest);
+            var alteredTarget = settings.PathAlter(destinationLessTarget).TrimStart('\\', '/');
+
+            target = Path.Combine(dest, alteredTarget);
+            Directory.CreateDirectory(Path.GetDirectoryName(target));
             if (Path.IsPathRooted(source))
             {
                 File.Copy(source, target, true);
             }
             else
             {
-                Directory.CreateDirectory(Path.GetDirectoryName(target));
                 using (var fileStream = new FileStream(target, FileMode.OpenOrCreate))
                 {
                     readStream.CopyTo(fileStream);
                 }
             }
             return target;
+        }
+
+        private string RemovePaths(string path, string pathRemove)
+        {
+            var paths = path.Split(new[] { "\\", "\\\\", "/" }, StringSplitOptions.RemoveEmptyEntries);
+            var pathsToRemove = pathRemove.Split(new[] { "\\", "\\\\", "/" }, StringSplitOptions.RemoveEmptyEntries);
+
+            var pathToRemove = string.Join("<", pathsToRemove);
+            var totalPath = string.Join("<", paths);
+
+            var newPath = totalPath.Replace(pathToRemove, "");
+
+            var newPathParts = newPath.Split(new[] { "<" }, StringSplitOptions.RemoveEmptyEntries);
+
+            return string.Join("/", newPathParts);
         }
 
         #region IDisposable Support
