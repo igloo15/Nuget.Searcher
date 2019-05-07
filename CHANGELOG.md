@@ -1,4 +1,27 @@
 # Changelog
+## Unreleased
+### Summary
+
+
+### Add
+*  folder exist method on packagedownload to determine if folder exists in download
+*  new NuGet Settings locator
+*  Fallback Feeds
+*  new copy files method to easily copy a folder of the nuget package
+
+
+### Changes
+*  N/A 
+
+
+### Fixes
+*  CopyFiles(string, string, token) now works correctly copying all folders and files in folder path given to destination
+*  correct nuget package name on readme
+*  fix casing of folders on api documentation
+
+
+
+
 ## v1.0.0
 ### Summary
 first official release of NuGet.Searcher Api hopefully allows more people to easily use nuget package api.. 
