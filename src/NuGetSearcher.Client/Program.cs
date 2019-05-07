@@ -38,7 +38,7 @@ namespace NuGetSearcher.Client
                 };
 
                 package.CopyFiles("../../test/bill", settings);
-                package.CopyFiles("../test/otter", settings);
+                package.CopyFiles("../test/otter", "lib/net45");
             }
 
             Console.WriteLine();
