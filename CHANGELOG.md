@@ -1,7 +1,7 @@
 # Changelog
-## Unreleased
+## v1.1.0
 ### Summary
-
+new release adding new apis for downloaded packages making it easier to copy files and access nuget settings and paths.. 
 
 ### Add
 *  folder exist method on packagedownload to determine if folder exists in download
@@ -11,7 +11,8 @@
 
 
 ### Changes
-*  N/A 
+*  Updated the documentation
+*  build script updated
 
 
 ### Fixes
